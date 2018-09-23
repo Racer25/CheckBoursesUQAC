@@ -33,6 +33,7 @@ let watcher = new Watcher(feed, interval);
 
 // Check for new entries every n seconds.
 watcher.on('new entries', function (entries) {
+    console.log("New entries!!");
     entries.forEach(function (entry) {
         console.log(entry.title)
     });
