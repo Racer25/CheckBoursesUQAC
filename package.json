@@ -1,0 +1,10 @@
+{
+  "name": "checkbourses",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "request": "^2.88.0",
+    "feed-watcher": "*"
+  }
+}
