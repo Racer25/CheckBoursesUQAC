@@ -10,13 +10,6 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-const mailOptions = {
-    from: 'charlescousyn@gmail.com', // sender address
-    to: config.receivers, // list of receivers
-    subject: 'Bourses UQAC (RaspiCharles)!', // Subject line
-    html: "<p>Une ou plusieurs bourse(s) viennent d'apparaître sur <a href='http://sae.uqac.ca/bourses/'>http://sae.uqac.ca/bourses/</a> !!</p>"// plain text body
-};
-
 //Promise to send mails
 let promiseSendMail = function(mailOptions)
 {
@@ -48,13 +41,30 @@ let watcher = new Watcher(feed, interval);
 
 // Check for new entries every n seconds.
 watcher.on('new entries', function (entries) {
-    console.log("New entries!!");
-    entries.forEach(function (entry) {
+    console.log("Il y a du nouveau!");
+
+    //Init html of the mail
+    let myHtml="<div><p>Une ou plusieurs bourse(s) viennent d'apparaître sur <a href='http://sae.uqac.ca/bourses/'>http://sae.uqac.ca/bourses/</a> !!</p></div>";
+
+    entries.forEach((entry) =>
+    {
+        myHtml += "<hr/><div>";
+        myHtml += "<p><u>Titre:</u> <b>"+entry.title+"</b></p>";
+        myHtml += "<p><u>Résumé:</u> "+entry.summary+"</p>";
+        myHtml += "</div>";
         console.log(entry.title)
     });
-   promiseSendMail(mailOptions)
-    .then(console.log)
-    .catch(console.error);
+
+    let mailOptions = {
+        from: 'charlescousyn@gmail.com', // sender address
+        to: config.receivers, // list of receivers
+        subject: 'Bourses UQAC (RaspiCharles)!', // Subject line
+        html: myHtml
+    };
+
+    promiseSendMail(mailOptions)
+        .then(console.log)
+        .catch(console.error);
 });
 
 // Start watching the feed.
@@ -62,7 +72,6 @@ watcher
     .start()
     .then(function (entries) {
         console.log(entries);
-        console.log("Watcher démarré");
     })
     .catch(function(error) {
         console.error(error);
