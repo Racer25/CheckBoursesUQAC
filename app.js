@@ -1,32 +1,47 @@
-const request = require("request");
 const config = require("./config");
+const nodemailer = require('nodemailer');
 
-let promiseSendSMS = function()
-{
-    return new Promise((resolve, reject)=>
-    {
-        request
-            .get(
-                "https://smsapi.free-mobile.fr/sendmsg?user="+config.user+"&pass="+config.pass+"&msg=Nouvelle(s)+bourses%21%21",
-                function (err, httpResponse, body)
-                {
-                    if (err) {
-                        console.error(err);
-                        console.error(httpResponse);
-                        reject(err);
-                    }
-                    else
-                    {
-                        resolve();
-                    }
-                }
-            );
-    });
+//Preparing mail objects
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'charlescousyn@gmail.com',
+        pass: config.googlePassword
+    }
+});
+
+const mailOptions = {
+    from: 'charlescousyn@gmail.com', // sender address
+    to: config.receivers, // list of receivers
+    subject: 'Bourses UQAC (RaspiCharles)!', // Subject line
+    html: "<p>Une ou plusieurs bourse(s) viennent d'apparaître sur <a href='http://sae.uqac.ca/bourses/'>http://sae.uqac.ca/bourses/</a> !!</p>"// plain text body
 };
 
+//Promise to send mails
+let promiseSendMail = function(mailOptions)
+{
+    return new Promise((resolve, reject) =>
+    {
+        transporter.sendMail(mailOptions,
+            function (err, info)
+            {
+                if (err)
+                {
+                    reject(err)
+                }
+                else
+                {
+                    resolve(info);
+                }
+            }
+    )});
+};
+
+
+//Watcher config
 let Watcher  = require('feed-watcher');
 let feed     = 'http://sae.uqac.ca/bourses/feed/?post_type=job_listing';
-let interval = 10;// seconds
+let interval = config.refreshTimeInSeconds;// seconds
 
 // if not interval is passed, 60s would be set as default interval.
 let watcher = new Watcher(feed, interval);
@@ -37,7 +52,9 @@ watcher.on('new entries', function (entries) {
     entries.forEach(function (entry) {
         console.log(entry.title)
     });
-    promiseSendSMS();
+   promiseSendMail(mailOptions)
+    .then(console.log)
+    .catch(console.error);
 });
 
 // Start watching the feed.

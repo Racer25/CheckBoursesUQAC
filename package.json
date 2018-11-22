@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {},
   "dependencies": {
-    "request": "^2.88.0",
-    "feed-watcher": "*"
+    "feed-watcher": "*",
+    "nodemailer": "^4.7.0"
   }
 }
