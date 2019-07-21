@@ -40,7 +40,7 @@ let interval = config.refreshTimeInSeconds;// seconds
 let watcher = new Watcher(feed, interval);
 
 // Check for new entries every n seconds.
-watcher.on('new entries', function (entries) {
+watcher.on('new entries', async function (entries) {
     console.log("Il y a du nouveau!");
 
     //Init html of the mail
@@ -61,17 +61,22 @@ watcher.on('new entries', function (entries) {
         subject: 'Bourses UQAC (RaspiCharles)!', // Subject line
         html: myHtml
     };
-
-    promiseSendMail(mailOptions)
-        .then(console.log)
-        .catch(console.error);
+     try
+     {
+         let res = await promiseSendMail(mailOptions);
+         console.log(res);
+     }
+     catch(err)
+     {
+         console.error(err);
+     }
 });
 
 // Start watching the feed.
 watcher
     .start()
     .then(function (entries) {
-        console.log(entries);
+        console.log("Watching " + feed + " ...");
     })
     .catch(function(error) {
         console.error(error);
