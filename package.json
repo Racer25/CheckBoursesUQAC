@@ -1,8 +1,10 @@
 {
   "name": "checkbourses",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {},
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
   "dependencies": {
     "feed-watcher": "*",
     "nodemailer": "^4.7.0"
